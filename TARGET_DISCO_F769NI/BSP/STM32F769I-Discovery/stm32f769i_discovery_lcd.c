@@ -253,6 +253,7 @@ static void DrawChar(uint16_t Xpos, uint16_t Ypos, const uint8_t *c);
 static void FillTriangle(uint16_t x1, uint16_t x2, uint16_t x3, uint16_t y1, uint16_t y2, uint16_t y3);
 static void LL_FillBuffer(uint32_t LayerIndex, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t OffLine, uint32_t ColorIndex);
 static void LL_ConvertLineToARGB8888(void * pSrc, void *pDst, uint32_t xSize, uint32_t ColorMode);
+static void LL_ConvertAreaToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t ColorMode);
 static uint16_t LCD_IO_GetID(void);
 /**
   * @}
@@ -1366,6 +1367,25 @@ void BSP_LCD_DrawBitmap(uint32_t Xpos, uint32_t Ypos, uint8_t *pbmp)
 }
 
 /**
+  * @brief  Draws a bitmap picture loaded in the internal Flash in ARGB888 format (32 bits per pixel).
+  * @param  Xpos: Bmp X position in the LCD
+  * @param  Ypos: Bmp Y position in the LCD
+  * @param  pbmp: Pointer to Bmp picture address in the internal Flash
+  * @retval None
+  */
+void BSP_LCD_TransferBitmap(uint32_t Xpos, uint32_t Ypos, uint32_t Width, uint32_t Height, uint32_t *pbmp)
+{
+  uint32_t address;
+  uint32_t input_color_mode = 0;
+  
+  /* Set the address */
+  address = hltdc_discovery.LayerCfg[ActiveLayer].FBStartAdress + (((BSP_LCD_GetXSize()*Ypos) + Xpos)*4);
+
+  /* Pixel format conversion */
+  LL_ConvertAreaToARGB8888(pbmp, (uint32_t *)address, Width, Height, input_color_mode);
+}
+
+/**
   * @brief  Draws a full rectangle in currently active layer.
   * @param  Xpos: X position
   * @param  Ypos: Y position
@@ -1932,8 +1952,78 @@ static void LL_ConvertLineToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uin
 }
 
 /**
+  * @brief  Converts a line to an ARGB8888 pixel format.
+  * @param  pSrc: Pointer to source buffer
+  * @param  pDst: Output color
+  * @param  xSize: Buffer width
+  * @param  ySize: Buffer width
+  * @param  ColorMode: Input color mode   
+  * @retval None
+  */
+ 
+// #define _USE_DMA2D_POLLING_
+
+static void LL_ConvertAreaToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uint32_t ySize, uint32_t ColorMode)
+{    
+  /* Configure the DMA2D Mode, Color Mode and output offset */
+  hdma2d_discovery.Init.Mode         = DMA2D_M2M_PFC;
+  hdma2d_discovery.Init.ColorMode    = ColorMode;
+  hdma2d_discovery.Init.OutputOffset = BSP_LCD_GetXSize() - xSize; 
+  
+  /* Foreground Configuration */
+  hdma2d_discovery.LayerCfg[1].AlphaMode = DMA2D_REPLACE_ALPHA;
+  hdma2d_discovery.LayerCfg[1].InputAlpha = 0xff;
+  hdma2d_discovery.LayerCfg[1].InputColorMode = ColorMode;
+  hdma2d_discovery.LayerCfg[1].InputOffset = 0;
+  
+  // Background
+  hdma2d_discovery.LayerCfg[0].AlphaMode = DMA2D_NO_MODIF_ALPHA;
+  hdma2d_discovery.LayerCfg[0].InputColorMode = DMA2D_INPUT_ARGB8888;
+  hdma2d_discovery.LayerCfg[0].InputOffset = BSP_LCD_GetXSize() - xSize;  
+
+  hdma2d_discovery.Instance = DMA2D; 
+  
+  /* DMA2D Initialization */
+  if(HAL_DMA2D_Init(&hdma2d_discovery) == HAL_OK) 
+  {
+    if(HAL_DMA2D_ConfigLayer(&hdma2d_discovery, 1) == HAL_OK) 
+    {
+#ifdef _USE_DMA2D_POLLING_      
+      if (HAL_DMA2D_Start(&hdma2d_discovery, (uint32_t)pSrc, (uint32_t)pDst, xSize, ySize) == HAL_OK)
+      {
+        /* Polling For DMA transfer */  
+        HAL_DMA2D_PollForTransfer(&hdma2d_discovery, 100);
+      }
+#else
+      if (HAL_DMA2D_Start_IT(&hdma2d_discovery, (uint32_t)pSrc, (uint32_t)pDst, xSize, ySize) == HAL_OK)
+      {
+        // DMA Complete Interrupt should be prepared
+      }
+#endif
+    }
+  } 
+}
+
+
+/**
   * @}
   */
+
+void BSP_LCD_SetDMACpltCallback( void (*fn)(DMA2D_HandleTypeDef *hdma2d))
+{
+    hdma2d_discovery.XferCpltCallback = fn;
+}
+
+/**
+* @brief override weak DMA2D ISR 
+  call HAL handler, which calls callbacks
+*/
+
+void DMA2D_IRQHandler(void)
+{
+    HAL_DMA2D_IRQHandler(&hdma2d_discovery);
+}
+
 
 /**
   * @}

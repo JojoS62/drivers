@@ -1660,7 +1660,6 @@ static void LL_ConvertAreaToARGB8888(void *pSrc, void *pDst, uint32_t xSize, uin
         HAL_DMA2D_PollForTransfer(&hdma2d_eval, 100);
       }
 #else
-      volatile uint16_t err = 9;
       if (HAL_DMA2D_Start_IT(&hdma2d_eval, (uint32_t)pSrc, (uint32_t)pDst, xSize, ySize) == HAL_OK)
       {
         // DMA Complete Interrupt should be prepared

@@ -364,6 +364,7 @@ void     BSP_LCD_DrawCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
 void     BSP_LCD_DrawPolygon(pPoint Points, uint16_t PointCount);
 void     BSP_LCD_DrawEllipse(int Xpos, int Ypos, int XRadius, int YRadius);
 void     BSP_LCD_DrawBitmap(uint32_t Xpos, uint32_t Ypos, uint8_t *pbmp);
+void     BSP_LCD_TransferBitmap(uint32_t Xpos, uint32_t Ypos, uint32_t Width, uint32_t Height, uint32_t *pbmp);
 
 void     BSP_LCD_FillRect(uint16_t Xpos, uint16_t Ypos, uint16_t Width, uint16_t Height);
 void     BSP_LCD_FillCircle(uint16_t Xpos, uint16_t Ypos, uint16_t Radius);
@@ -373,6 +374,8 @@ void     BSP_LCD_FillEllipse(int Xpos, int Ypos, int XRadius, int YRadius);
 void     BSP_LCD_DisplayOn(void);
 void     BSP_LCD_DisplayOff(void);
 void     BSP_LCD_SetBrightness(uint8_t BrightnessValue);
+
+void     BSP_LCD_SetDMACpltCallback( void (*fn)(DMA2D_HandleTypeDef *hdma2d));
 
 /**
   * @}
