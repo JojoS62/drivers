@@ -1375,6 +1375,12 @@ __weak void BSP_LCD_MspInit(LTDC_HandleTypeDef *hltdc, void *Params)
   gpio_init_structure.Pin       = LCD_BL_CTRL_PIN;  /* LCD_BL_CTRL pin has to be manually controlled */
   gpio_init_structure.Mode      = GPIO_MODE_OUTPUT_PP;
   HAL_GPIO_Init(LCD_BL_CTRL_GPIO_PORT, &gpio_init_structure);
+
+    /** @brief NVIC configuration for DMA2D interrupt that is now enabled */
+  HAL_NVIC_SetPriority(DMA2D_IRQn, 3, 0);
+  HAL_NVIC_EnableIRQ(DMA2D_IRQn);
+
+
 }
 
 /**
@@ -1390,6 +1396,8 @@ __weak void BSP_LCD_MspDeInit(LTDC_HandleTypeDef *hltdc, void *Params)
   /* Disable LTDC block */
   __HAL_LTDC_DISABLE(hltdc);
 
+  /** @brief Disable IRQ of DMA2D IP */
+  HAL_NVIC_DisableIRQ(DMA2D_IRQn);
   /* LTDC Pins deactivation */
 
   /* GPIOE deactivation */
@@ -1419,6 +1427,11 @@ __weak void BSP_LCD_MspDeInit(LTDC_HandleTypeDef *hltdc, void *Params)
 
   /* Disable LTDC clock */
   __HAL_RCC_LTDC_CLK_DISABLE();
+
+  __HAL_RCC_DMA2D_FORCE_RESET();
+
+  /** @brief Disable the LTDC, DMA2D and DSI Host and Wrapper clocks */
+  __HAL_RCC_DMA2D_CLK_DISABLE();
 
   /* GPIO pins clock can be shut down in the application
      by surcharging this __weak function */
@@ -1724,9 +1737,15 @@ void BSP_LCD_SetDMACpltCallback( void (*fn)(DMA2D_HandleTypeDef *hdma2d))
 }
 
 /**
-  * @}
-  */
-  
+* @brief override weak DMA2D ISR 
+  call HAL handler, which calls callbacks
+*/
+
+void DMA2D_IRQHandler(void)
+{
+    HAL_DMA2D_IRQHandler(&hDma2dHandler);
+}
+
 /**
   * @}
   */
