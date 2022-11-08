@@ -49,7 +49,9 @@
 #include "../Components/otm8009a/otm8009a.h"
 /* Include ADV7533 HDMI Driver IC driver code */
 #include "../Components/adv7533/adv7533.h"
-   
+
+#include "../Components/nt35510/nt35510.h"
+
 /* Include SDRAM Driver */
 #include "stm32f769i_discovery_sdram.h"
 #include "stm32f769i_discovery.h"

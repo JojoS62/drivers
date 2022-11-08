@@ -286,7 +286,7 @@ uint8_t BSP_LCD_InitEx(LCD_OrientationTypeDef orientation)
 {
   DSI_PLLInitTypeDef dsiPllInit;
   static RCC_PeriphCLKInitTypeDef  PeriphClkInitStruct;
-  uint32_t LcdClock  = 27429; /*!< LcdClk = 27429 kHz */
+  uint32_t LcdClock  = 27000;//27429; /*!< LcdClk = 27429 kHz */
   uint16_t read_id = 0;
 
   uint32_t laneByteClk_kHz = 0;
@@ -369,12 +369,12 @@ uint8_t BSP_LCD_InitEx(LCD_OrientationTypeDef orientation)
   VACT = lcd_y_size;
 
   /* The following values are same for portrait and landscape orientations */
-  VSA  = OTM8009A_480X800_VSYNC;        /* 12  */
-  VBP  = OTM8009A_480X800_VBP;          /* 12  */
-  VFP  = OTM8009A_480X800_VFP;          /* 12  */
-  HSA  = OTM8009A_480X800_HSYNC;        /* 63  */
-  HBP  = OTM8009A_480X800_HBP;          /* 120 */
-  HFP  = OTM8009A_480X800_HFP;          /* 120 */   
+  VSA  = NT35510_480X800_VSYNC;
+  VBP  = NT35510_480X800_VBP;
+  VFP  = NT35510_480X800_VFP;
+  HSA  = NT35510_480X800_HSYNC;
+  HBP  = NT35510_480X800_HBP;
+  HFP  = NT35510_480X800_HFP;
 
   hdsivideo_handle.VirtualChannelID = LCD_OTM8009A_ID;
   hdsivideo_handle.ColorCoding = LCD_DSI_PIXEL_DATA_FMT_RBG888;
@@ -440,9 +440,9 @@ uint8_t BSP_LCD_InitEx(LCD_OrientationTypeDef orientation)
     * LTDC clock frequency = PLLLCDCLK / LTDC_PLLSAI_DIVR_2 = 54.85 MHz / 2 = 27.429 MHz 
     */
   PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_LTDC;
-  PeriphClkInitStruct.PLLSAI.PLLSAIN = 384;
-  PeriphClkInitStruct.PLLSAI.PLLSAIR = 7;
-  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;
+  PeriphClkInitStruct.PLLSAI.PLLSAIN = 144; //384
+  PeriphClkInitStruct.PLLSAI.PLLSAIR = 2; //7
+  PeriphClkInitStruct.PLLSAIDivR = RCC_PLLSAIDIVR_2;//RCC_PLLSAIDIVR_2
   HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct);
 
   /* Background value */
@@ -478,7 +478,7 @@ uint8_t BSP_LCD_InitEx(LCD_OrientationTypeDef orientation)
   /* Initialize the OTM8009A LCD Display IC Driver (KoD LCD IC Driver)
   *  depending on configuration set in 'hdsivideo_handle'.
   */
-  OTM8009A_Init(OTM8009A_FORMAT_RGB888, orientation);
+  NT35510_Init(NT35510_FORMAT_RGB888, orientation);
 
 /***********************End OTM8009A Initialization****************************/ 
 
@@ -686,7 +686,7 @@ void BSP_LCD_Reset(void)
     /* Configure the GPIO on PJ15 */
     gpio_init_structure.Pin   = GPIO_PIN_15;
     gpio_init_structure.Mode  = GPIO_MODE_OUTPUT_PP;
-    gpio_init_structure.Pull  = GPIO_PULLUP;
+    gpio_init_structure.Pull  = GPIO_NOPULL;
     gpio_init_structure.Speed = GPIO_SPEED_HIGH;
 
     HAL_GPIO_Init(GPIOJ, &gpio_init_structure);
