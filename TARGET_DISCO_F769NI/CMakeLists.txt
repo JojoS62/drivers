@@ -12,6 +12,7 @@ target_sources(bsp-DISCO_F769NI
         BSP/Components/ft6x06/ft6x06.c
         BSP/Components/otm8009a/otm8009a.c
         BSP/Components/wm8994/wm8994.c
+        BSP/Components/nt35510/nt35510.c
         BSP/Fonts/font8.c
         BSP/Fonts/font12.c
         BSP/Fonts/font16.c
