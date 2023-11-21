@@ -21,7 +21,7 @@
 // Constructor
 TS_DISCO_F769NI::TS_DISCO_F769NI()
 {
-  BSP_TS_Init(100, 100);
+  BSP_TS_Init(800, 480);
 }
 
 // Destructor
