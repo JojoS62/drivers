@@ -2198,7 +2198,7 @@ static void DFSDMx_FilterMspDeInit(void)
   * @param  None
   * @retval None
   */
-void AUDIO_DFSDMx_DMAx_TOP_LEFT_IRQHandler(void) // DMA2_Stream0_IRQHandler
+void __attribute__((weak)) AUDIO_DFSDMx_DMAx_TOP_LEFT_IRQHandler(void) // DMA2_Stream0_IRQHandler
 {
     HAL_DMA_IRQHandler(hAudioInTopLeftFilter.hdmaReg);
 }
@@ -2208,7 +2208,7 @@ void AUDIO_DFSDMx_DMAx_TOP_LEFT_IRQHandler(void) // DMA2_Stream0_IRQHandler
   * @param  None
   * @retval None
   */
-void AUDIO_DFSDMx_DMAx_TOP_RIGHT_IRQHandler(void) // DMA2_Stream5_IRQHandler
+void __attribute__((weak)) AUDIO_DFSDMx_DMAx_TOP_RIGHT_IRQHandler(void) // DMA2_Stream5_IRQHandler
 {
    HAL_DMA_IRQHandler(hAudioInTopRightFilter.hdmaReg); 
 }
@@ -2218,7 +2218,7 @@ void AUDIO_DFSDMx_DMAx_TOP_RIGHT_IRQHandler(void) // DMA2_Stream5_IRQHandler
   * @param  None
   * @retval None
   */
-void AUDIO_OUT_SAIx_DMAx_IRQHandler(void) // DMA2_Stream1_IRQHandler
+void __attribute__((weak)) AUDIO_OUT_SAIx_DMAx_IRQHandler(void) // DMA2_Stream1_IRQHandler
 {
   HAL_DMA_IRQHandler(haudio_out_sai.hdmatx);
 }
@@ -2228,7 +2228,7 @@ void AUDIO_OUT_SAIx_DMAx_IRQHandler(void) // DMA2_Stream1_IRQHandler
   * @param  None
   * @retval None
   */
-void AUDIO_DFSDMx_DMAx_BUTTOM_LEFT_IRQHandler(void) // DMA2_Stream6_IRQHandler
+void __attribute__((weak)) AUDIO_DFSDMx_DMAx_BUTTOM_LEFT_IRQHandler(void) // DMA2_Stream6_IRQHandler
 {
   HAL_DMA_IRQHandler(hAudioInButtomLeftFilter.hdmaReg);
 }
@@ -2238,7 +2238,7 @@ void AUDIO_DFSDMx_DMAx_BUTTOM_LEFT_IRQHandler(void) // DMA2_Stream6_IRQHandler
   * @param  None
   * @retval None
   */
-void AUDIO_DFSDMx_DMAx_BUTTOM_RIGHT_IRQHandler(void) // DMA2_Stream7_IRQHandler
+void __attribute__((weak)) AUDIO_DFSDMx_DMAx_BUTTOM_RIGHT_IRQHandler(void) // DMA2_Stream7_IRQHandler
 {
   HAL_DMA_IRQHandler(hAudioInButtomRightFilter.hdmaReg);
 }
